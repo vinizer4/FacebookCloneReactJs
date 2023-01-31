@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-
-const app = express();
+const dotenv = require("dotenv");
+dotenv.config();
 
 let allowed = ["http://localhost:3000", "some other link"];
 
@@ -22,16 +22,13 @@ function options(req, res) {
   res(null, tmp);
 }
 
+const { readdirSync } = require("fs");
+const app = express();
 app.use(cors(options));
 
-app.get("/", (req, res) => {
-  res.send("welcome from home");
-});
+readdirSync("./routes").map((r) => app.use("/", require("./routes/" + r)));
 
-app.get("/books", (req, res) => {
-  res.send("welcome from books");
-});
-
-app.listen(8000, () => {
-  console.log("API online!");
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`API is running on port ${PORT}..`);
 });
